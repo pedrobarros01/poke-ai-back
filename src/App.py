@@ -10,28 +10,18 @@ if __name__ == '__main__':
 
     poke_ai = PokeAi(GPT_API)
 
-    dados_pokemon = {
-        "base_corpo": "Dragão",
-        "cor_principal": "Vermelho",
-        "cor_secundaria": "Preto",
-        "tipo_1": "Fogo",
-        "tipo_2": "Dark",
+    dados_poke = {
+        "base_corpo": "Raposa",
+        "cor_principal": "Verde",
+        "cor_secundaria": "Rosa",
+        "tipo_1": "Fada",
+        "tipo_2": "Dragão",
         "geracao": "1",
-        "peso": 120,
-        "altura": 2.3,
-        "detalhes_extras": "Este Pokémon foi criado para proteger uma antiga civilização."
+        "peso": 89,
+        "altura": 2,
+        "detalhes_extras": "Esta criatura surgiu nas florestas como a rainha das fadas."
     }
 
-    descricao_pokemon = poke_ai.poke_desc_generator(dados_pokemon)
-    print(descricao_pokemon)
-    imagem_pokemon = poke_ai.poke_img_generator(descricao_pokemon)
-    nome_pokemon = poke_ai.get_pokemon_name(descricao_pokemon)
-
-    pokemon = {
-        "nome": nome_pokemon,
-        "descricao": descricao_pokemon,
-        "imagem": imagem_pokemon
-    }
-
-    poke_ai.save_pokemon_json(pokemon)
-    poke_ai.save_pokemon_image(imagem_pokemon, pokemon)
+    descricao_poke, poke_name = poke_ai.poke_desc_generator(dados_poke)
+    print(descricao_poke)
+    imagem_pokemon = poke_ai.poke_img_generator(descricao_poke, poke_name)
