@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "poke-ai-back"
+version = "0.1.0"
+description = ""
+authors = ["Pedro Barros <82074537+pedrobarros01@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+openai = "^1.54.5"
+fastapi = "^0.115.5"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
