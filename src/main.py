@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from controllers.TesteController import controller_teste
+from controllers.PokeController import controller_poke
 from fastapi.middleware.cors import CORSMiddleware
 
 api = FastAPI()
@@ -17,3 +18,4 @@ api.add_middleware(
 )
 
 api.include_router(controller_teste)
+api.include_router(controller_poke)

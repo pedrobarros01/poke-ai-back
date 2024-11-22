@@ -180,13 +180,12 @@ class PokeAi:
         model="gpt-4",
         messages=[
             {"role": "system", "content": "Você é um assistente especializado em criar ataques de Pokémon."},
-            {"role": "user", "content": f"Crie 3 ataques criativos e únicos para o Pokémon {poke_name}. Cada ataque deve ser retornado no formato de dicionário com as chaves 'nome', 'tipo' e 'dano'. Por exemplo: {{'nome': 'Ataque1', 'tipo': 'Fogo', 'dano': 50}}. O dano deve ser um número inteiro."}
+            {"role": "user", "content": f"Crie 4 ataques criativos e únicos para o Pokémon {poke_name}. me envie apenas os ataques em um dicionário python com as chaves 'nome', 'tipo' e 'dano' e nada mais. Por exemplo: {{'nome': 'bola de fogo', 'tipo': 'Fogo', 'dano': 50}}. O dano deve ser um número inteiro."}
         ]
     )
 
     # Processar a resposta e extrair os ataques
     content = response.choices[0].message.content
-    print(f'{content=}')
 
     # Ajustar o conteúdo para ser um formato válido de lista de dicionários
     # Remover a vírgula extra entre os dicionários e substituir quebras de linha
@@ -195,6 +194,7 @@ class PokeAi:
     try:
       # Converte a string em lista de dicionários
       attacks = ast.literal_eval(content)
+      print(f'{attacks=}')
     except Exception as e:
       print(f"Erro ao processar a resposta: {e}")
       attacks = []
