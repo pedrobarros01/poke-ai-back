@@ -45,7 +45,12 @@ async def gerar_pokemon(
     }
 
     # Gerar descrição e nome do Pokémon
-    description, poke_name = poke_ai.poke_desc_generator(poke_data)
+    description, poke_name, stat_atk, stat_def, stat_hp = poke_ai.poke_desc_generator(
+        poke_data)
+
+    print(f'atk: {stat_atk}')
+    print(f'def: {stat_def}')
+    print(f'hp: {stat_hp}')
 
     # Gerar ataques para o Pokémon
     attacks = poke_ai.generate_attacks(poke_name)
@@ -57,6 +62,9 @@ async def gerar_pokemon(
         "nome": poke_name,
         "descricao": description,
         "attacks": attacks,
+        "atk": stat_atk,
+        "def": stat_def,
+        "hp": stat_hp,
         "image_url": image_url
     }
   except Exception as e:

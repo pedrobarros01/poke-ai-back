@@ -14,7 +14,7 @@ class PokeAi:
 
   def poke_desc_generator(self, poke_data):
     prompt = f"""
-            Crie uma breve descrição de uma criatura com as seguintes características:
+            Crie uma breve descrição, valores de ataque (atk), defesa (def) e saúde (hp) para uma criatura com as seguintes características:
             - Base do corpo: {poke_data['base_corpo']}
             - Cor principal: {poke_data['cor_principal']}
             - Cor secundária: {poke_data['cor_secundaria']}
@@ -24,7 +24,11 @@ class PokeAi:
             - Peso: {poke_data['peso']} kg
             - Altura: {poke_data['altura']} m
             - Detalhes extras: {poke_data['detalhes_extras']}
-            Observação: no texto final, não cite o termo "pokemon", ao invés disso substitua por criatura. Sempre comece gerando o nome da criatura dessa forma "Nome: ".
+            Observação: no texto final, não cite o termo "pokemon", substitua por "criatura". Sempre inicie gerando o nome da criatura desta forma: "Nome: ".
+            O retorno deve incluir:
+            - Nome
+            - Descrição
+            - Valores de atk, def e hp (em uma linha separada no formato "atk: [valor], def: [valor], hp: [valor]").
         """
 
     response = openai.chat.completions.create(
@@ -37,13 +41,27 @@ class PokeAi:
         ],
     )
 
+    # Processar a resposta
     full_description = response.choices[0].message.content
 
+    # Extrair nome da criatura
     poke_name = full_description.split("\n")[0].replace("Nome: ", "").strip()
-    description = "\n".join(full_description.split("\n")[1:]).strip()
 
-    description = description.replace("Descrição: ", "").strip()
+    # Extrair descrição
+    description = "\n".join(
+        [line for line in full_description.split(
+            "\n") if not line.startswith("atk:")]
+    ).replace("Descrição: ", "").strip()
 
+    # Extrair valores de atk, def e hp
+    stats_line = [line for line in full_description.split(
+        "\n") if line.startswith("atk:")][0]
+    stats = {
+        key.strip(): int(value.strip().replace(".", ""))  # Remover o ponto final
+        for key, value in (stat.split(":") for stat in stats_line.split(","))
+    }
+
+    # Construir o Pokémon
     poke = {
         "nome": poke_name,
         "tipo_1": poke_data["tipo_1"],
@@ -52,11 +70,15 @@ class PokeAi:
         "peso": poke_data["peso"],
         "altura": poke_data["altura"],
         "descricao": description,
+        "atk": stats["atk"],
+        "def": stats["def"],
+        "hp": stats["hp"],
     }
 
+    # Salvar o Pokémon
     self.save_poke_json(poke, poke_name)
 
-    return description, poke_name
+    return description, poke_name, stats["atk"], stats["def"], stats["hp"]
 
   def poke_img_generator(self, description, poke_name):
     prompt = f"""
@@ -171,7 +193,7 @@ class PokeAi:
         "geracao": 1,
         "peso": 50.0,
         "altura": 2.0,
-        "detalhes_extras": "Tem asas flamejantes."
+        "detalhes_extras": "Tem asas flamejantes.",
     }
 
   def generate_attacks(self, poke_name):
