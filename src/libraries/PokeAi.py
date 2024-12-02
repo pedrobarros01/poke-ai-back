@@ -5,7 +5,7 @@ import requests
 import logging
 import random
 import ast
-
+from models.Pokemon import Ataque, StatsPokemon
 
 class PokeAi:
   def __init__(self, api_key):
@@ -100,7 +100,6 @@ class PokeAi:
     image_url = response.data[0].url
     logging.info(f"Imagem gerada com sucesso: {image_url}")
 
-    self.save_poke_image(image_url, poke_name)
 
     return image_url
 
@@ -129,8 +128,26 @@ class PokeAi:
       print(f"Erro ao processar a resposta: {e}")
       attacks = []
 
-    return attacks
+    return attacks 
+  def gpt_escolhe_ataque(self, ataques_ia: list[Ataque], stats_pokemon_user: StatsPokemon) -> str:
+    prompt = 'Baseado em uma batalha pokemon, dado esses ataques: '
+    for i, ataque in enumerate(ataques_ia):
+      prompt += f' Atq {i} -> nome: {ataque.nome}, tipo: {ataque.tipo}, dano: {ataque.dano} \n'
+    prompt += f' e dado os estados do seu oponente: hp {stats_pokemon_user.hp}, ataque: {stats_pokemon_user.ataque}, defesa: {stats_pokemon_user.defesa}, tipo1: {stats_pokemon_user.tipo1} e tipo2: {stats_pokemon_user.tipo2 if stats_pokemon_user.tipo2 else "Não tem"}\n'
+    prompt += f'me diga qual o nome do melhor ataque para atacar esse oponente. Só me diga o nome do ataque'
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+    )
 
+    # Processar a resposta
+    ataque_escolhido = response.choices[0].message.content
+    return ataque_escolhido
   def generate_battle_story(self, user_poke, ai_poke):
     prompt = f"""
     Crie uma história para justificar uma batalha épica que irá ocorrer entre os seguintes dois Pokémons e seus treinadores:

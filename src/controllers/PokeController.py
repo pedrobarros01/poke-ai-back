@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from libraries.PokeAi import PokeAi
 from services.PokeService import PokeService
-from models.Pokemon import Pokemon, BatalhaHistoria
+from models.Pokemon import Pokemon, BatalhaHistoria, IAForm, Ataque, FormPokemon
 
 controller_poke = APIRouter()
 
@@ -18,16 +18,7 @@ service = PokeService(api_key)
 
 @controller_poke.post('/pokemon/gerar', status_code=200, tags=['pokemon'])
 async def gerar_pokemon(
-    base_corpo: str = Form(..., description="Base do corpo do Pokémon"),
-    cor_principal: str = Form(..., description="Cor principal do Pokémon"),
-    cor_secundaria: str = Form(..., description="Cor secundária do Pokémon"),
-    tipo_1: str = Form(..., description="Primeiro tipo do Pokémon"),
-    tipo_2: str = Form(None, description="Segundo tipo do Pokémon (opcional)"),
-    geracao: int = Form(..., description="Geração do Pokémon"),
-    peso: float = Form(..., description="Peso do Pokémon em kg"),
-    altura: float = Form(..., description="Altura do Pokémon em metros"),
-    detalhes_extras: str = Form(...,
-                                description="Detalhes adicionais sobre o Pokémon")
+    info_poke: FormPokemon
 ) -> Pokemon:
   """
   Gera um Pokémon com seus detalhes, 4 ataques únicos e uma imagem baseada nos dados fornecidos.
@@ -35,15 +26,15 @@ async def gerar_pokemon(
   try:
     # Montar os dados do Pokémon com as informações do formulário
     poke_data = {
-        "base_corpo": base_corpo,
-        "cor_principal": cor_principal,
-        "cor_secundaria": cor_secundaria,
-        "tipo_1": tipo_1,
-        "tipo_2": tipo_2,
-        "geracao": geracao,
-        "peso": peso,
-        "altura": altura,
-        "detalhes_extras": detalhes_extras
+        "base_corpo": info_poke.base_corpo,
+        "cor_principal": info_poke.cor_principal,
+        "cor_secundaria": info_poke.cor_secundaria,
+        "tipo_1": info_poke.tipo_1,
+        "tipo_2": info_poke.tipo_2,
+        "geracao": info_poke.geracao,
+        "peso": info_poke.peso,
+        "altura": info_poke.altura,
+        "detalhes_extras": info_poke.detalhes_extras
     }
     return service.criar_pokemon(poke_data)
    
@@ -59,6 +50,17 @@ async def gerar_enredo_batalha(user_poke_name: str, ai_poke_name: str) -> Batalh
   try:
     # Carregar dados dos Pokémon a partir dos arquivos
     return service.gerar_enredo_batalha(user_poke_name, ai_poke_name)
+  except FileNotFoundError as e:
+    raise HTTPException(status_code=404, detail=f"Pokémon não encontrado: {e}")
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
+  
+
+@controller_poke.post('/batalha/ia-escolhe', status_code=200, tags=['batalha'])
+async def gerar_enredo_batalha(estado_batalha: IAForm) -> Ataque:
+
+  try:
+    return service.gerar_ataque_pokemon_ia(estado_batalha.ataques_ia, estado_batalha.stats_oponente)
   except FileNotFoundError as e:
     raise HTTPException(status_code=404, detail=f"Pokémon não encontrado: {e}")
   except Exception as e:

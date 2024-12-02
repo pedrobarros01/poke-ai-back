@@ -33,7 +33,7 @@ class PokeService:
 
         return BatalhaHistoria(enredo=enredo)
     
-    def gerar_ataque_pokemon_ia(self, ataques_ia: list[Ataque], stats_pokemon_user: StatsPokemon) -> str:
+    def gerar_ataque_pokemon_ia(self, ataques_ia: list[Ataque], stats_pokemon_user: StatsPokemon) -> Ataque:
         nome_ataque_escolhido = self.poke_ai.gpt_escolhe_ataque(ataques_ia, stats_pokemon_user)
         ataque = filter(lambda x:  x.nome == nome_ataque_escolhido , ataques_ia)
-        return ataque[0].nome
+        return list(ataque)[0]
