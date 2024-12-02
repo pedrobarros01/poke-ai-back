@@ -3,6 +3,8 @@ from typing import Dict, Any
 import os
 from dotenv import load_dotenv
 from libraries.PokeAi import PokeAi
+from services.PokeService import PokeService
+from models.Pokemon import Pokemon, BatalhaHistoria
 
 controller_poke = APIRouter()
 
@@ -11,8 +13,8 @@ load_dotenv()
 api_key = os.getenv("GPT_API")
 if not api_key:
   raise RuntimeError("A chave da API GPT_API não foi configurada.")
-poke_ai = PokeAi(api_key=api_key)
 
+service = PokeService(api_key)
 
 @controller_poke.post('/pokemon/gerar', status_code=200, tags=['pokemon'])
 async def gerar_pokemon(
@@ -26,7 +28,7 @@ async def gerar_pokemon(
     altura: float = Form(..., description="Altura do Pokémon em metros"),
     detalhes_extras: str = Form(...,
                                 description="Detalhes adicionais sobre o Pokémon")
-) -> Dict[str, Any]:
+) -> Pokemon:
   """
   Gera um Pokémon com seus detalhes, 4 ataques únicos e uma imagem baseada nos dados fornecidos.
   """
@@ -43,48 +45,20 @@ async def gerar_pokemon(
         "altura": altura,
         "detalhes_extras": detalhes_extras
     }
-
-    # Gerar descrição e nome do Pokémon
-    description, poke_name, stat_atk, stat_def, stat_hp = poke_ai.poke_desc_generator(
-        poke_data)
-
-    print(f'atk: {stat_atk}')
-    print(f'def: {stat_def}')
-    print(f'hp: {stat_hp}')
-
-    # Gerar ataques para o Pokémon
-    attacks = poke_ai.generate_attacks(poke_name)
-
-    # Gerar a imagem do Pokémon
-    image_url = poke_ai.poke_img_generator(description, poke_name)
-
-    return {
-        "nome": poke_name,
-        "descricao": description,
-        "attacks": attacks,
-        "atk": stat_atk,
-        "def": stat_def,
-        "hp": stat_hp,
-        "image_url": image_url
-    }
+    return service.criar_pokemon(poke_data)
+   
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
 
 
 @controller_poke.post('/batalha/enredo', status_code=200, tags=['batalha'])
-async def gerar_enredo_batalha(user_poke_name: str, ai_poke_name: str) -> Dict[str, str | None]:
+async def gerar_enredo_batalha(user_poke_name: str, ai_poke_name: str) -> BatalhaHistoria:
   """
   Gera uma história para justificar uma batalha épica entre dois Pokémon.
   """
   try:
     # Carregar dados dos Pokémon a partir dos arquivos
-    user_poke = poke_ai.load_pokemon_by_name(user_poke_name)
-    ai_poke = poke_ai.load_pokemon_by_name(ai_poke_name)
-
-    # Gerar a história da batalha
-    enredo = poke_ai.generate_battle_story(user_poke, ai_poke)
-
-    return {"enredo": enredo}
+    return service.gerar_enredo_batalha(user_poke_name, ai_poke_name)
   except FileNotFoundError as e:
     raise HTTPException(status_code=404, detail=f"Pokémon não encontrado: {e}")
   except Exception as e:

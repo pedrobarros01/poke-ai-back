@@ -75,8 +75,6 @@ class PokeAi:
         "hp": stats["hp"],
     }
 
-    # Salvar o Pokémon
-    self.save_poke_json(poke, poke_name)
 
     return description, poke_name, stats["atk"], stats["def"], stats["hp"]
 
@@ -105,96 +103,6 @@ class PokeAi:
     self.save_poke_image(image_url, poke_name)
 
     return image_url
-
-  def get_poke_name(self, description):
-    lines = description.split("\n")
-    if lines and lines[0].startswith("Nome: "):
-      return lines[0].replace("Nome: ", "").strip()
-    return "Desconhecido"
-
-  def save_poke_json(self, pokedex_info, poke_name):
-    os.makedirs("pokes/descriptions", exist_ok=True)
-
-    try:
-      json_path = f"pokes/descriptions/{poke_name}.json"
-      with open(json_path, "w", encoding="utf-8") as file:
-        json.dump(pokedex_info, file, indent=4, ensure_ascii=False)
-
-      logging.info(f"JSON salvo com sucesso em {json_path}")
-
-    except Exception as e:
-      logging.error(f"Erro ao salvar o JSON: {e}")
-
-  def save_poke_image(self, image_url, poke_name):
-    os.makedirs("pokes/images", exist_ok=True)
-
-    try:
-      image_path = f"pokes/images/{poke_name}.png"
-
-      response = requests.get(image_url)
-      response.raise_for_status()
-
-      with open(image_path, "wb") as file:
-        file.write(response.content)
-
-      logging.info(f"Imagem salva com sucesso em {image_path}")
-
-    except Exception as e:
-      logging.error(f"Erro ao salvar a imagem: {e}")
-
-  def choose_user_pokemon(self):
-    pokes = self.load_pokemons()
-    if not pokes:
-      print("Nenhum Pokémon encontrado! Criando um para você...")
-      poke_data = self.generate_pokemon_data()
-      _, poke_name = self.poke_desc_generator(poke_data)
-      return self.load_pokemon_by_name(poke_name)
-
-    print("Escolha seu Pokémon:")
-    for i, poke in enumerate(pokes):
-      print(
-          f"{i + 1}. {poke['nome']} - Tipo: {poke['tipo_1']} / {poke.get('tipo_2', 'Nenhum')}")
-
-    choice = int(input("Digite o número do Pokémon escolhido: ")) - 1
-    return pokes[choice]
-
-  def choose_ai_pokemon(self):
-    pokes = self.load_pokemons()
-    if not pokes:
-      print("Nenhum Pokémon disponível para o adversário. Criando um novo...")
-      poke_data = self.generate_pokemon_data()
-      _, poke_name = self.poke_desc_generator(poke_data)
-      return self.load_pokemon_by_name(poke_name)
-    return random.choice(pokes)
-
-  def load_pokemons(self):
-    folder = "pokes/descriptions"
-    if not os.path.exists(folder):
-      return []
-
-    pokes = []
-    for file_name in os.listdir(folder):
-      with open(os.path.join(folder, file_name), "r", encoding="utf-8") as file:
-        pokes.append(json.load(file))
-    return pokes
-
-  def load_pokemon_by_name(self, poke_name):
-    with open(f"pokes/descriptions/{poke_name}.json", "r", encoding="utf-8") as file:
-      return json.load(file)
-
-  def generate_pokemon_data(self):
-    # Gere dados fictícios ou peça ao usuário para inserir
-    return {
-        "base_corpo": "Dragão",
-        "cor_principal": "Azul",
-        "cor_secundaria": "Vermelho",
-        "tipo_1": "Fogo",
-        "tipo_2": "Voador",
-        "geracao": 1,
-        "peso": 50.0,
-        "altura": 2.0,
-        "detalhes_extras": "Tem asas flamejantes.",
-    }
 
   def generate_attacks(self, poke_name):
     # Supondo que a API esteja retornando ataques no formato correto
@@ -247,57 +155,3 @@ class PokeAi:
     except Exception as e:
       print(f"Erro ao gerar história da batalha: {e}")
       return "Erro ao gerar história."
-
-  def start_battle(self, user_poke, ai_poke):
-    turn = 0
-    while user_poke['hp'] > 0 and ai_poke['hp'] > 0:
-      if turn % 2 == 0:  # Turno do jogador
-        print(f"\nSeu turno! HP do adversário: {ai_poke['hp']}")
-        for i, attack in enumerate(user_poke['attacks']):
-          # Para cada ataque, extraímos o nome e o dano
-          attack_name = attack['nome']
-          damage = int(attack['dano'])
-          print(f"{i + 1}. {attack_name} (Dano: {damage})")
-
-        choice = int(input("Escolha seu ataque: ")) - 1
-        # Novamente, extraímos o nome e o dano do ataque escolhido
-        attack_chosen = user_poke['attacks'][choice]
-        attack_name = attack_chosen['nome']
-        damage = int(attack_chosen['dano'])
-        ai_poke['hp'] -= damage
-        print(f"Você usou {attack_name}! Causou {damage} de dano.")
-      else:  # Turno da AI
-        ai_attack = random.choice(ai_poke['attacks'])
-        # Extrai o nome e dano do ataque da AI
-        attack_name = ai_attack['nome']
-        damage = int(ai_attack['dano'])
-        user_poke['hp'] -= damage
-        print(f"\nAdversário usou {attack_name}! Causou {damage} de dano.")
-
-      turn += 1
-
-    if user_poke['hp'] <= 0:
-      print("\nVocê perdeu a batalha!")
-    else:
-      print("\nVocê venceu a batalha!")
-
-  def battle(self):
-    user_poke = self.choose_user_pokemon()
-    ai_poke = self.choose_ai_pokemon()
-
-    # Atribuir HP inicial
-    user_poke['hp'] = 200
-    ai_poke['hp'] = 200
-
-    # Gerar ataques para ambos os Pokémons
-    user_poke['attacks'] = self.generate_attacks(user_poke['nome'])
-    print(f'{user_poke=}')
-    ai_poke['attacks'] = self.generate_attacks(ai_poke['nome'])
-    print(f'{ai_poke=}')
-
-    # Gerar narrativa da batalha
-    story = self.generate_battle_story(user_poke, ai_poke)
-    print(story)
-
-    # Iniciar a batalha
-    self.start_battle(user_poke, ai_poke)
