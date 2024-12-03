@@ -57,7 +57,7 @@ async def gerar_enredo_batalha(user_poke_name: str, ai_poke_name: str) -> Batalh
   
 
 @controller_poke.post('/batalha/ia-escolhe', status_code=200, tags=['batalha'])
-async def gerar_enredo_batalha(estado_batalha: IAForm) -> Ataque:
+async def ia_escolhe_ataque(estado_batalha: IAForm) -> Ataque:
 
   try:
     return service.gerar_ataque_pokemon_ia(estado_batalha.ataques_ia, estado_batalha.stats_oponente)
