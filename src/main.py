@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from controllers.PokeController import controller_poke
+from .controllers.PokeController import controller_poke
 from fastapi.middleware.cors import CORSMiddleware
 
 api = FastAPI(title='PokeAIAPI')
