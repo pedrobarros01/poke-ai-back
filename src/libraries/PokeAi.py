@@ -110,7 +110,7 @@ class PokeAi:
         model="gpt-4",
         messages=[
             {"role": "system", "content": "Você é um assistente especializado em criar ataques de Pokémon."},
-            {"role": "user", "content": f"Crie 4 ataques criativos e únicos para o Pokémon {poke_name}. me envie apenas os ataques em um array de objetos/dicionarios, sem id para cada objeto, os objetos deverão conter  com as chaves 'nome', 'tipo' e 'dano' e nada mais. Por exemplo: {{'nome': 'bola de fogo', 'tipo': 'Fogo', 'dano': 50}}. O dano deve ser um número inteiro."}
+            {"role": "user", "content": f"Crie 4 ataques criativos e únicos para o Pokémon {poke_name}. me envie apenas os ataques em um array de objetos/dicionarios, sem id para cada objeto, os objetos deverão conter  com as chaves 'nome', 'tipo' e 'dano' e nada mais. Por exemplo: {{'nome': 'bola de fogo', 'tipo': 'Fire', 'dano': 50}}. O dano deve ser um número inteiro. O tipo precisa vir em inglês."}
         ]
     )
 
