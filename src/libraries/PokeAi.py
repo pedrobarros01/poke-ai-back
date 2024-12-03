@@ -28,7 +28,7 @@ class PokeAi:
             O retorno deve incluir:
             - Nome
             - Descrição
-            - Valores de atk, def e hp (em uma linha separada no formato "atk: [valor], def: [valor], hp: [valor]").
+            - Valores de atk, def, hp e velocidade (em uma linha separada no formato "atk: [valor], def: [valor], hp: [valor], velocidade: [valor]").
         """
 
     response = openai.chat.completions.create(
@@ -73,10 +73,11 @@ class PokeAi:
         "atk": stats["atk"],
         "def": stats["def"],
         "hp": stats["hp"],
+        
     }
 
 
-    return description, poke_name, stats["atk"], stats["def"], stats["hp"]
+    return description, poke_name, stats["atk"], stats["def"], stats["hp"], stats["velocidade"]
 
   def poke_img_generator(self, description, poke_name):
     prompt = f"""
@@ -109,7 +110,7 @@ class PokeAi:
         model="gpt-4",
         messages=[
             {"role": "system", "content": "Você é um assistente especializado em criar ataques de Pokémon."},
-            {"role": "user", "content": f"Crie 4 ataques criativos e únicos para o Pokémon {poke_name}. me envie apenas os ataques em um dicionário python com as chaves 'nome', 'tipo' e 'dano' e nada mais. Por exemplo: {{'nome': 'bola de fogo', 'tipo': 'Fogo', 'dano': 50}}. O dano deve ser um número inteiro."}
+            {"role": "user", "content": f"Crie 4 ataques criativos e únicos para o Pokémon {poke_name}. me envie apenas os ataques em um array de objetos/dicionarios, sem id para cada objeto, os objetos deverão conter  com as chaves 'nome', 'tipo' e 'dano' e nada mais. Por exemplo: {{'nome': 'bola de fogo', 'tipo': 'Fogo', 'dano': 50}}. O dano deve ser um número inteiro."}
         ]
     )
 
@@ -118,7 +119,7 @@ class PokeAi:
 
     # Ajustar o conteúdo para ser um formato válido de lista de dicionários
     # Remover a vírgula extra entre os dicionários e substituir quebras de linha
-    content = "[{}]".format(content.replace('},\n', '},'))
+    #content = "[{}]".format(content.replace('},\n', '},'))
 
     try:
       # Converte a string em lista de dicionários

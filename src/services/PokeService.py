@@ -7,7 +7,7 @@ class PokeService:
 
     def criar_pokemon(self, poke_data) -> Pokemon:
         # Gerar descrição e nome do Pokémon
-        description, poke_name, stat_atk, stat_def, stat_hp = self.poke_ai.poke_desc_generator(
+        description, poke_name, stat_atk, stat_def, stat_hp, stat_vel = self.poke_ai.poke_desc_generator(
             poke_data)
 
         # Gerar ataques para o Pokémon
@@ -21,7 +21,8 @@ class PokeService:
                        movimento=attacks, 
                        ataque=stat_atk, 
                        defesa=stat_def, 
-                       hp=stat_hp, 
+                       hp=stat_hp,
+                       velocidade=stat_vel,
                        sprite=image_url)
     
     def gerar_enredo_batalha(self, poke1_name: str, poke2_name: str):

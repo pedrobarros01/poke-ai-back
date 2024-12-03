@@ -24,6 +24,7 @@ class Pokemon(BaseModel):
     ataque: int
     defesa: int
     hp: int
+    velocidade: int
     sprite: str | None
 
 
