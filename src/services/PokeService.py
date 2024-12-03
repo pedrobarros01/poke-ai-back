@@ -1,5 +1,5 @@
-from libraries.PokeAi import PokeAi
-from models.Pokemon import Pokemon, BatalhaHistoria, Ataque, StatsPokemon
+from ..libraries.PokeAi import PokeAi
+from ..models.Pokemon import Pokemon, BatalhaHistoria, Ataque, StatsPokemon
 class PokeService:
     def __init__(self, api_key) -> None:
         self.poke_ai = PokeAi(api_key)

@@ -5,7 +5,7 @@ import requests
 import logging
 import random
 import ast
-from models.Pokemon import Ataque, StatsPokemon
+from ..models.Pokemon import Ataque, StatsPokemon
 
 class PokeAi:
   def __init__(self, api_key):

@@ -2,9 +2,9 @@ from fastapi import APIRouter, HTTPException, Form
 from typing import Dict, Any
 import os
 from dotenv import load_dotenv
-from libraries.PokeAi import PokeAi
-from services.PokeService import PokeService
-from models.Pokemon import Pokemon, BatalhaHistoria, IAForm, Ataque, FormPokemon
+from ..libraries.PokeAi import PokeAi
+from ..services.PokeService import PokeService
+from ..models.Pokemon import Pokemon, BatalhaHistoria, IAForm, Ataque, FormPokemon
 
 controller_poke = APIRouter()
 
