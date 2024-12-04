@@ -104,22 +104,29 @@ class PokeAi:
 
     return image_url
 
-  def generate_attacks(self, poke_name):
+  def generate_attacks(self, poke_name, type_1, type_2):
     # Supondo que a API esteja retornando ataques no formato correto
-    response = openai.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "Você é um assistente especializado em criar ataques de Pokémon."},
-            {"role": "user", "content": f"Crie 4 ataques criativos e únicos para o Pokémon {poke_name}. me envie apenas os ataques em um array de objetos/dicionarios, sem id para cada objeto, os objetos deverão conter  com as chaves 'nome', 'tipo' e 'dano' e nada mais. Por exemplo: {{'nome': 'bola de fogo', 'tipo': 'Fire', 'dano': 50}}. O dano deve ser um número inteiro. O tipo precisa vir em inglês."}
+
+    valid_types = [
+            "bug", "dark", "dragon", "electric", "fairy", "fighting", "fire", "flying",
+            "ghost", "grass", "ground", "ice", "normal", "poison", "psychic", "rock",
+            "steel", "water"
         ]
-    )
+
+    response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Você é um assistente especializado em criar ataques de Pokémon."},
+                {"role": "user", "content": f"""Crie 4 ataques criativos e únicos para o Pokémon {poke_name} 
+                com os tipos {type_1} e {type_2}. Retorne apenas os ataques em um array de objetos/dicionários, 
+                sem id para cada objeto. Cada objeto deve conter as chaves 'nome', 'tipo' e 'dano' e nada mais. 
+                Por exemplo: {{'nome': 'Bola de Fogo', 'tipo': 'Fire', 'dano': 50}}. O dano deve ser um número inteiro 
+                entre 10 e 150. Certifique-se de que o tipo seja um destes: {', '.join(valid_types)}."""}
+            ]
+      )
 
     # Processar a resposta e extrair os ataques
     content = response.choices[0].message.content
-
-    # Ajustar o conteúdo para ser um formato válido de lista de dicionários
-    # Remover a vírgula extra entre os dicionários e substituir quebras de linha
-    #content = "[{}]".format(content.replace('},\n', '},'))
 
     try:
       # Converte a string em lista de dicionários
@@ -130,6 +137,7 @@ class PokeAi:
       attacks = []
 
     return attacks 
+  
   def gpt_escolhe_ataque(self, ataques_ia: list[Ataque], stats_pokemon_user: StatsPokemon) -> str:
     prompt = 'Baseado em uma batalha pokemon, dado esses ataques: '
     for i, ataque in enumerate(ataques_ia):

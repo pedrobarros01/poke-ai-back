@@ -7,11 +7,13 @@ class PokeService:
 
     def criar_pokemon(self, poke_data) -> Pokemon:
         # Gerar descrição e nome do Pokémon
+        tipo_1 = poke_data.get('tipo_1', 'Nenhum')
+        tipo_2 = poke_data.get('tipo_2', 'Nenhum')
         description, poke_name, stat_atk, stat_def, stat_hp, stat_vel = self.poke_ai.poke_desc_generator(
             poke_data)
 
         # Gerar ataques para o Pokémon
-        attacks = self.poke_ai.generate_attacks(poke_name)
+        attacks = self.poke_ai.generate_attacks(poke_name, tipo_1, tipo_2)
 
         # Gerar a imagem do Pokémon
         image_url = self.poke_ai.poke_img_generator(description, poke_name)
