@@ -108,9 +108,9 @@ class PokeAi:
     # Supondo que a API esteja retornando ataques no formato correto
 
     valid_types = [
-            "bug", "dark", "dragon", "electric", "fairy", "fighting", "fire", "flying",
-            "ghost", "grass", "ground", "ice", "normal", "poison", "psychic", "rock",
-            "steel", "water"
+            "Bug", "Dark", "dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying",
+            "Ghost", "Grass", "Ground", "Gce", "Normal", "Poison", "Psychic", "Rock",
+            "Steel", "Water"
         ]
 
     response = openai.ChatCompletion.create(
