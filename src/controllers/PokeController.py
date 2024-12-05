@@ -65,3 +65,7 @@ async def ia_escolhe_ataque(estado_batalha: IAForm) -> Ataque:
     raise HTTPException(status_code=404, detail=f"Pokémon não encontrado: {e}")
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
+
+@controller_poke.get('/hello', status_code=200, tags=['hello'])
+def hello():
+  return {"hello": "ola mundo"}
