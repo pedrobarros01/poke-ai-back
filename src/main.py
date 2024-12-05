@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .controllers.PokeController import controller_poke
+from controllers.PokeController import controller_poke
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title='PokeAIAPI')
@@ -10,7 +10,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
