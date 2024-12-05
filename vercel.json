@@ -12,8 +12,8 @@
         }
     ],
     "functions": {
-        "src/main.py": {
-            "maxDuration": 50
-        }
+    "src/**/*": {
+      "maxDuration": 50 
     }
+  }
 }
